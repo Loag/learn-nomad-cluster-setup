@@ -5,6 +5,8 @@ set -e
 # Disable interactive apt prompts
 export DEBIAN_FRONTEND=noninteractive
 
+export INSTALL_NVIDIA_DOCKER=false
+
 cd /ops
 
 CONFIGDIR=/ops/shared/config
@@ -32,16 +34,15 @@ CONSULTEMPLATEDIR=/opt/consul-template
 # Dependencies
 sudo apt-get install -y software-properties-common
 sudo apt-get update
+
 sudo apt-get install -y unzip tree redis-tools jq curl tmux
 sudo apt-get clean
 
 
 # Disable the firewall
-
 sudo ufw disable || echo "ufw not installed"
 
 # Consul
-
 curl -L $CONSULDOWNLOAD > consul.zip
 
 ## Install
@@ -56,7 +57,6 @@ sudo mkdir -p $CONSULDIR
 sudo chmod 755 $CONSULDIR
 
 # Vault
-
 curl -L $VAULTDOWNLOAD > vault.zip
 
 ## Install
@@ -71,7 +71,6 @@ sudo mkdir -p $VAULTDIR
 sudo chmod 755 $VAULTDIR
 
 # Nomad
-
 curl -L $NOMADDOWNLOAD > nomad.zip
 
 ## Install
@@ -86,7 +85,6 @@ sudo mkdir -p $NOMADDIR
 sudo chmod 755 $NOMADDIR
 
 # Consul Template 
-
 curl -L $CONSULTEMPLATEDOWNLOAD > consul-template.zip
 
 ## Install
@@ -99,7 +97,6 @@ sudo mkdir -p $CONSULTEMPLATECONFIGDIR
 sudo chmod 755 $CONSULTEMPLATECONFIGDIR
 sudo mkdir -p $CONSULTEMPLATEDIR
 sudo chmod 755 $CONSULTEMPLATEDIR
-
 
 # Docker
 distro=$(lsb_release -si | tr '[:upper:]' '[:lower:]')

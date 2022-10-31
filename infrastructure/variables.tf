@@ -1,3 +1,32 @@
+variable "aws_profile" {
+  description = "The profile name to use to access aws"
+  type = string
+}
+
+variable "vpc_finder" {
+  description = "Find vpc with tag name = {input name}"
+  type = object({
+    NAME = string
+  })
+}
+
+variable "instance_count" {
+  description = "How many instances of nomad to create (x2)"
+  type = number
+  default = 3
+}
+
+variable "instance_settings" {
+  description = "EC2 instance settings"
+  type = object({
+    ami = string
+    size = string
+  })
+  default = {
+    size = "t2.micro"
+  }
+}
+
 variable "name" {
   description = "Used to name various infrastructure components"
   default = "nomad"

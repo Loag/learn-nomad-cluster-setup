@@ -6,33 +6,33 @@ CONFIGDIR=/ops/shared/config
 
 CONSULCONFIGDIR=/etc/consul.d
 NOMADCONFIGDIR=/etc/nomad.d
+
 CONSULTEMPLATECONFIGDIR=/etc/consul-template.d
+
 HOME_DIR=ubuntu
 
 # Wait for network
 sleep 15
 
 DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'`)
+
 CLOUD=$1
 RETRY_JOIN=$2
 NOMAD_BINARY=$3
 
 # Get IP from metadata service
-if [ "$CLOUD" = "gce" ]; then
-  IP_ADDRESS=$(curl -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/ip)
-else
-  IP_ADDRESS=$(curl http://instance-data/latest/meta-data/local-ipv4)
-fi
-# IP_ADDRESS="$(/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}')"
+IP_ADDRESS=$(curl http://instance-data/latest/meta-data/local-ipv4)
 
 # Consul
 sed -i "s/IP_ADDRESS/$IP_ADDRESS/g" $CONFIGDIR/consul_client.hcl
 sed -i "s/RETRY_JOIN/$RETRY_JOIN/g" $CONFIGDIR/consul_client.hcl
+
 sudo cp $CONFIGDIR/consul_client.hcl $CONSULCONFIGDIR/consul.hcl
 sudo cp $CONFIGDIR/consul_$CLOUD.service /etc/systemd/system/consul.service
 
 sudo systemctl enable consul.service
 sudo systemctl start consul.service
+
 sleep 10
 
 # Nomad
@@ -50,7 +50,9 @@ sudo cp $CONFIGDIR/nomad.service /etc/systemd/system/nomad.service
 
 sudo systemctl enable nomad.service
 sudo systemctl start nomad.service
+
 sleep 10
+
 export NOMAD_ADDR=http://$IP_ADDRESS:4646
 
 # Consul Template
